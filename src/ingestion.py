@@ -29,7 +29,7 @@ def clean_hitlog(df):
     for column in ["page_name", "page_url", "user_id"]: # ----> remove leading & Trailing spaces in data if present
         df[column] = df[column].astype("string").str.strip()
 
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce") # ---> convert timestamp into datetime format 
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce") # ---> convert timestamp into pandas datetime format 
 
     df = df.dropna(subset = ["user_id", "page_url", "timestamp"]) # ---> remove records with missing values 
 

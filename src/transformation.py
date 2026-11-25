@@ -3,21 +3,16 @@ import pandas as pd
 article_prefix = "/articles/"
 registration_url = "/register"
 
-########################################################################################
-
-### main logic - here we will calculate how many unique users visited each articles before registering  ###
-
-########################################################################################
-
+### main logic - here we will calculate how many unique users were influenced by each articles before registering  ###
 def calculate_article_counts(df):
     
     article_counts = {}  # dict key value pair
 
     df["timestamp"] = pd.to_datetime(df["timestamp"]) ## --> convert timestamap in to date time
 
-    for user_id, user_data in df.groupby("user_id"):                ##---> group records by individual user
+    for user_id, user_data in df.groupby("user_id"):     ##---> group records by individual user
 
-        registrations = user_data[user_data["page_url"] == registration_url ] ##---> gets regi record for specfic user
+        registrations = user_data[user_data["page_url"] == registration_url ] ##--> for each user, identify reg record wth time 
 
         if registrations.empty:  ## --> if not registrered then ignores
             continue
@@ -29,7 +24,7 @@ def calculate_article_counts(df):
                 (user_data["timestamp"] < registration_time)
         ]
 
-        ## ---> count each article only once per user
+        ## ---> remove duplicate article visits for same user(if same user visits same articles mul times)
         unique_articles = article_visits.drop_duplicates(subset=["page_url"])
 
         ## ---> loping unique articles and increase count for each eligible article
@@ -46,19 +41,15 @@ def calculate_article_counts(df):
 
     return article_counts
 
-########################################################################################
-
 ### Here we will sort articles by total count and return top 3  ###
-
-########################################################################################
 
 def get_top_three(article_counts): 
 
     results = []
 
-    for (page_name, page_url), total in article_counts.items():  ##---> convert dict to list 
+    for (page_name, page_url), total in article_counts.items():  ##---> get both keys and values from dict
 
-        results.append({"page_name": page_name, 
+        results.append({"page_name": page_name, # --> covert dic info to list of dict
                         "page_url": page_url,
                         "total": total
         })
